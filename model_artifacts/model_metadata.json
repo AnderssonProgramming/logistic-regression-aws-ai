@@ -1,0 +1,20 @@
+{
+  "model_type": "Logistic Regression",
+  "features": [
+    "Age",
+    "Sex",
+    "Chest pain type",
+    "BP",
+    "Cholesterol",
+    "Max HR",
+    "ST depression",
+    "Number of vessels fluro"
+  ],
+  "n_features": 8,
+  "training_accuracy": 0.8253968253968254,
+  "test_accuracy": 0.7901234567901234,
+  "threshold": 0.5,
+  "regularization": "None (\u03bb=0)",
+  "dataset": "Kaggle Heart Disease Dataset",
+  "samples_trained": 189
+}
