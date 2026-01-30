@@ -1,6 +1,8 @@
 # Heart Disease Risk Prediction: Logistic Regression Homework
 
-Implementation of logistic regression models from a dataset to predict heart disease based on age, sex, chest pain type, BP, cholesterol, FBS over 120, EKG results, max HR, exercise angina, ST depression, deployed on AWS SageMaker.
+## Exercise Summary
+
+Implements logistic regression for heart disease prediction: EDA, training/visualization, regularization, and SageMaker deployment. This project builds logistic regression from scratch using NumPy—no scikit-learn for core training—to understand the mathematical foundations behind classification algorithms.
 
 ## Getting Started
 
@@ -12,11 +14,12 @@ Requirements for running the notebooks:
 
 - [Python 3.x](https://www.python.org/)
 - [NumPy](https://numpy.org/) - Numerical computing
-- [Matplotlib](https://matplotlib.org/) - Inline plots only
+- [Pandas](https://pandas.pydata.org/) - Data manipulation and analysis
+- [Matplotlib](https://matplotlib.org/) - Visualization
 - [Jupyter Notebook](https://jupyter.org/) - For local execution
 - [AWS Account](https://aws.amazon.com/) - For SageMaker execution
 
-> **Not allowed:** scikit-learn, statsmodels, TensorFlow/PyTorch, or any high-level regression/optimization library.
+> **Not allowed:** scikit-learn, statsmodels, TensorFlow/PyTorch, or any high-level regression/optimization library for core training.
 
 ### Installing
 
@@ -32,7 +35,7 @@ A step by step series to get a development environment running:
 2. Install the required libraries
 
     ```bash
-    pip install numpy matplotlib jupyter
+    pip install numpy pandas matplotlib jupyter
     ```
 
 3. Launch Jupyter Notebook
@@ -56,42 +59,97 @@ Today, intelligence is increasingly considered a first-class quality attribute a
 
 As enterprise architects, it is not sufficient to understand what models do. We must also understand how they are built from first principles, executed and validated in controlled environments, and operated within cloud platforms.
 
-## Dataset and Notation
+## Dataset Description
 
-Use the following notation throughout:
+### Source
 
-| Symbol | Description | Units |
-|--------|-------------|-------|
-| **M** | Stellar mass | Solar mass (M⊙) |
-| **T** | Effective stellar temperature | Kelvin (K) |
-| **L** | Stellar luminosity | Solar luminosity (L⊙) |
+**Kaggle Heart Disease Dataset** - Downloaded from [https://www.kaggle.com/datasets/neurocipher/heartdisease](https://www.kaggle.com/datasets/neurocipher/heartdisease)
 
-### Part I Dataset (One Feature)
+> **About Kaggle:** Kaggle is a popular online platform for data science enthusiasts, hosting datasets, competitions, and notebooks—think of it as GitHub for data and ML projects (free to join at [kaggle.com](https://kaggle.com)).
 
-```python
-M = [0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
-L = [0.15, 0.35, 1.00, 2.30, 4.10, 7.00, 11.2, 17.5, 25.0, 35.0]
-```
+### Dataset Overview
 
-### Part II Dataset (Two Features)
+| Attribute | Description |
+|-----------|-------------|
+| **Samples** | 270 patient records |
+| **Features** | 14 clinical attributes |
+| **Target** | Binary (Presence = disease, Absence = no disease) |
+| **Disease Rate** | ~44.4% presence rate (120 Presence / 150 Absence) |
 
-```python
-M = [0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.2, 2.4]
-T = [3800, 4400, 5800, 6400, 6900, 7400, 7900, 8300, 8800, 9200]
-L = [0.15, 0.35, 1.00, 2.30, 4.10, 7.00, 11.2, 17.5, 25.0, 35.0]
-```
+### Key Features
+
+| Feature | Description | Range/Values |
+|---------|-------------|--------------|
+| **Age** | Patient age in years | 29-77 years |
+| **Sex** | Gender (1 = male, 0 = female) | Binary |
+| **Chest pain type** | Type of chest pain | 1-4 |
+| **BP** | Resting blood pressure | 94-200 mm Hg |
+| **Cholesterol** | Serum cholesterol | 126-564 mg/dL |
+| **FBS over 120** | Fasting blood sugar > 120 mg/dL | Binary |
+| **EKG results** | Resting ECG results | 0-2 |
+| **Max HR** | Maximum heart rate achieved | 71-202 bpm |
+| **Exercise angina** | Exercise induced angina | Binary |
+| **ST depression** | ST depression induced by exercise | 0.0-6.2 |
+| **Slope of ST** | Slope of peak exercise ST segment | 1-3 |
+| **Number of vessels fluro** | Number of major vessels colored by fluoroscopy | 0-3 |
+| **Thallium** | Thalassemia | 3-7 |
+
+## Homework Steps
+
+### Step 1: Load and Prepare the Dataset
+- Download from Kaggle and load into Pandas
+- Binarize target column (1=disease presence, 0=absence)
+- EDA: Summarize stats, handle missing/outliers, plot class distribution
+- 70/30 train/test split (stratified); normalize numerical features
+- Select ≥6 features (e.g., Age, Cholesterol, BP, Max HR, ST Depression, Vessels)
+
+### Step 2: Implement Basic Logistic Regression
+- Implement sigmoid, cost (binary cross-entropy), gradient descent
+- Train on full train set (α~0.01, 1000+ iterations)
+- Plot cost vs. iterations
+- Predict (threshold 0.5); evaluate accuracy/precision/recall/F1 on train/test
+
+### Step 3: Visualize Decision Boundaries
+- Select ≥3 feature pairs (e.g., Age-Cholesterol, BP-Max HR, ST Depression-Vessels)
+- For each pair: subset to 2D, train model, plot boundary line + scatter
+- Discuss separability/nonlinearity
+
+### Step 4: Repeat with Regularization
+- Add L2 to cost/gradients: λ/(2m)||w||²; dw += (λ/m)w
+- Tune λ values: [0, 0.001, 0.01, 0.1, 1]
+- Re-plot costs/boundaries (one pair: unreg vs. reg)
+- Re-evaluate metrics and ||w||
+
+### Step 5: Explore Deployment in Amazon SageMaker
+- Export best model (w/b as NumPy array)
+- Create SageMaker notebook instance; upload/run notebook
+- Build/deploy simple endpoint for inference
+- Test with sample input (e.g., Age=60, Chol=300)
 
 ## Repository Structure
 
 ```
 /
-├── README.md                           # Project documentation
-├── heart_disease_lr_analysis.ipynb      # Logistic Regression 
+├── README.md                              # Project documentation
+├── SAGEMAKER_SETUP.md                     # SageMaker setup guide
+├── heart_disease_lr_analysis.ipynb        # Main Logistic Regression notebook
+├── heart_disease_prediction.csv           # Dataset file
+├── dataset.py                             # Dataset utilities
+├── LICENSE                                # MIT License
+└── refering_notebooks/                    # Reference materials
+    ├── week2_classification_hour1_final.ipynb
+    ├── week2_classification_hour2_regularization_with_derivatives.ipynb
+    └── APENDIX-RidgeVsGradientDescentInRegularizedLinearRegression.ipynb
 ```
 
 ### Notebook: Logistic Regression
 
-`heart_disease_lr_analysis.ipynb` - Implements logistic regression from scratch using gradient descent to model and predict the relationship in heart disease risk.
+`heart_disease_lr_analysis.ipynb` - Implements logistic regression from scratch using gradient descent to predict heart disease risk. Includes:
+- **EDA**: Data exploration, visualization, and preprocessing
+- **Implementation**: Sigmoid, cost function (binary cross-entropy), gradient descent
+- **Visualization**: Decision boundary plots for multiple feature pairs
+- **Regularization**: L2 regularization with hyperparameter tuning
+- **Evaluation**: Accuracy, precision, recall, F1-score metrics
 
 ## Deployment
 
@@ -99,21 +157,46 @@ L = [0.15, 0.35, 1.00, 2.30, 4.10, 7.00, 11.2, 17.5, 25.0, 35.0]
 
 To deploy and run this project on AWS SageMaker:
 
-1. Upload the unique notebook to AWS SageMaker (Studio or Notebook Instances)
+1. Upload the notebook to AWS SageMaker (Studio or Notebook Instances)
 2. Run all cells successfully (no errors)
-3. No model deployment, endpoints, or MLOps pipelines are required
+3. Export best model (w/b as NumPy array)
+4. Create inference handler for patient inputs → probability output
+5. Deploy endpoint and test with sample inputs
+
+### Deployment Evidence
+
+<!-- TODO: Add deployment screenshots here -->
+<!-- 
+Include ≥3 images:
+1. Training job status screenshot
+2. Endpoint configuration screenshot  
+3. Inference response screenshot
+
+Example:
+![Training Job Status](images/sagemaker_training.png)
+![Endpoint Config](images/sagemaker_endpoint.png)
+![Inference Response](images/sagemaker_inference.png)
+-->
+
+**Sample Inference Test:**
+- **Input:** Age=60, Chol=300
+- **Output:** Prob=0.XX (risk level)
+- **Endpoint ARN:** `[To be added after deployment]`
+
+> **Deployment Benefits:** Enables real-time risk scoring for clinical decision support. Expected latency: ~XXms per inference.
 
 ### AWS SageMaker Execution Evidence
 
-The successful execution of both notebooks on AWS SageMaker is documented in the following video:
+The successful execution of the notebook on AWS SageMaker is documented in the following video:
 
 📹 **[aws-sagemaker-ai-notebooks-video.mp4](aws-sagemaker-ai-notebooks-video.mp4)**
 
 The video demonstrates:
-- ✅ Both notebooks open in AWS SageMaker JupyterLab
+- ✅ Notebook open in AWS SageMaker JupyterLab
 - ✅ Successful execution of all cells (no errors)
 - ✅ Rendered plots and visualizations
 - ✅ Complete training loop outputs
+- ✅ Model deployment and endpoint testing
 
 #### How notebooks were uploaded to SageMaker
 
@@ -135,18 +218,21 @@ For detailed step-by-step instructions on setting up AWS SageMaker (creating dom
 
 - [Python](https://www.python.org/) - Programming language
 - [NumPy](https://numpy.org/) - Numerical computing library
+- [Pandas](https://pandas.pydata.org/) - Data manipulation and analysis
 - [Matplotlib](https://matplotlib.org/) - Visualization library
 - [AWS SageMaker](https://aws.amazon.com/sagemaker/) - Cloud ML platform
 
 ## Evaluation Criteria
 
-| Criterion | Description |
-|-----------|-------------|
-| Correctness | Implementation of loss, gradients, and training loop |
-| Vectorization | Proper use of vectorization where required |
-| Plots | Quality and completeness (dataset, cost surface, interaction cost, convergence) |
-| Explanations | Quality of explanations and interpretations |
-| SageMaker | Successful execution with documented evidence |
+| Criterion | Points | Description |
+|-----------|--------|-------------|
+| **EDA** | 10 | Data exploration, preprocessing, and insights |
+| **Implementation** | 35 | Correctness of loss, gradients, and training loop |
+| **Visualization/Analysis** | 20 | Quality of plots and interpretations |
+| **Regularization** | 15 | L2 implementation and hyperparameter tuning |
+| **Deployment/Repo** | 15 | SageMaker deployment with documented evidence |
+| **Clarity** | 5 | Code comments and documentation quality |
+| **Total** | **100** | |
 
 ## Authors
 
@@ -159,5 +245,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 - Machine Learning Bootcamp - Digital Transformation and Enterprise Architecture course
-- Inspiration from main-sequence stellar behavior models
+- UCI Machine Learning Repository for the original Heart Disease dataset
+- Kaggle for dataset hosting and accessibility
 - AWS SageMaker for cloud ML deployment capabilities
