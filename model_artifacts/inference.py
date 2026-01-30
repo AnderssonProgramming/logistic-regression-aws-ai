@@ -1,4 +1,3 @@
-
 """
 SageMaker Inference Script for Heart Disease Prediction Model
 This script handles model loading and inference for the deployed endpoint.

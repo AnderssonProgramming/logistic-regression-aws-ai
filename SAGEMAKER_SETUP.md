@@ -139,13 +139,15 @@ Choose either **VPC only** or **Public internet access**:
 
 Once you have JupyterLab running:
 
-1. **Upload the notebooks:**
-   - `01_part1_linreg_1feature.ipynb`
-   - `02_part2_polyreg.ipynb`
+1. **Upload the project files:**
+   - `heart_disease_lr_analysis.ipynb` (main notebook with Steps 1-5)
+   - `heart_disease_prediction.csv` (dataset)
+   - `model.tar.gz` (packaged model for deployment)
+   - `model_artifacts/` folder (contains inference.py and model files)
 
-2. **Run all cells** in each notebook to verify successful execution
+2. **Run all cells** in the notebook to verify successful execution
 
-3. **Verify outputs:** Ensure all plots are rendered correctly
+3. **Verify outputs:** Ensure all plots, metrics, and model artifacts are generated correctly
 
 ---
 
@@ -168,8 +170,6 @@ Once you have JupyterLab running:
 | **Stopped Instances** | When your session ends, running SageMaker notebook instances may be placed into a 'stopped' state. They will not automatically restart in new sessions |
 | **Logout Sessions** | When using SageMaker Canvas or Studio, logout when done working |
 | **Delete Unused Apps** | Consider deleting SageMaker Canvas and Studio apps that are no longer needed |
-
----
 
 ---
 
@@ -262,7 +262,7 @@ endpoint_name = 'heart-disease-prediction-endpoint'
 
 predictor = model.deploy(
     initial_instance_count=1,
-    instance_type='ml.t2.medium',  # Cost-effective for inference
+    instance_type='ml.t3.medium',  # Supported instance type for Learner Labs
     endpoint_name=endpoint_name
 )
 
@@ -347,7 +347,7 @@ print("\n💰 Resources cleaned up - no ongoing charges!")
 2. Choose **Inference > Endpoints** from the left menu
 3. Verify your `heart-disease-prediction-endpoint` appears with status **InService**
 4. Click on the endpoint name to see details:
-   - Instance type: `ml.t2.medium`
+   - Instance type: `ml.t3.medium`
    - Instance count: 1
    - Created time
    - Endpoint ARN
@@ -356,13 +356,13 @@ print("\n💰 Resources cleaned up - no ongoing charges!")
 
 ## Endpoint Pricing Reference
 
-| Instance Type | vCPU | Memory | Price/Hour (us-east-1) |
-|--------------|------|--------|------------------------|
-| ml.t2.medium | 2 | 4 GB | ~$0.05 |
-| ml.t3.medium | 2 | 4 GB | ~$0.05 |
-| ml.m5.large | 2 | 8 GB | ~$0.12 |
+| Instance Type | vCPU | Memory | Price/Hour (us-east-1) | Supported |
+|--------------|------|--------|------------------------|----------|
+| ml.t3.medium | 2 | 4 GB | ~$0.05 | ✅ Yes |
+| ml.t3.large | 2 | 8 GB | ~$0.09 | ✅ Yes |
+| ml.m5.large | 2 | 8 GB | ~$0.12 | ✅ Yes |
 
-> **Tip:** Use `ml.t2.medium` for development/testing. Delete endpoints when not in use.
+> **Tip:** Use `ml.t3.medium` for development/testing. Delete endpoints when not in use.
 
 ---
 
