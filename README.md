@@ -121,6 +121,66 @@ This dataset follows standard clinical encodings commonly used in heart disease 
 
 > ⚠️ **Disclaimer:** This dataset is intended ONLY for educational and research purposes. It must NOT be used for real-world medical diagnosis or treatment decisions without professional clinical validation.
 
+## Results & Visualizations
+
+### Exploratory Data Analysis
+
+#### Class Distribution
+The dataset shows a relatively balanced distribution between heart disease presence and absence.
+
+![Class Distribution](images/class_distribution.png)
+
+#### Feature Distributions by Class
+Analysis of how key clinical features differ between patients with and without heart disease.
+
+![Feature Distributions](images/feature_distributions.png)
+
+#### Correlation Matrix
+Correlation analysis reveals relationships between clinical features and the target variable.
+
+![Correlation Matrix](images/correlation_matrix.png)
+
+### Model Training
+
+#### Cost Function Convergence
+The model successfully converges during gradient descent training, demonstrating proper learning.
+
+![Cost Convergence](images/cost_convergence.png)
+
+#### Feature Weights
+Trained model weights show which features most strongly influence heart disease prediction.
+
+![Feature Weights](images/feature_weights.png)
+
+### Decision Boundaries
+
+#### Age vs Cholesterol
+![Decision Boundary: Age vs Cholesterol](images/decision_boundary_age_cholesterol.png)
+
+#### Blood Pressure vs Max Heart Rate
+![Decision Boundary: BP vs Max HR](images/decision_boundary_bp_max_hr.png)
+
+#### ST Depression vs Number of Vessels
+![Decision Boundary: ST Depression vs Vessels](images/decision_boundary_st_depression_number_of_vessels_fluro.png)
+
+### Regularization Analysis
+
+Comparison of decision boundaries with different L2 regularization strengths (λ values).
+
+![Regularization Comparison](images/regularization_comparison.png)
+
+### Model Evaluation
+
+#### Performance Metrics
+Comparison of accuracy, precision, recall, and F1-score between train and test sets.
+
+![Metrics Comparison](images/metrics_comparison.png)
+
+#### Confusion Matrix
+Test set predictions showing true positives, true negatives, false positives, and false negatives.
+
+![Confusion Matrix](images/confusion_matrix.png)
+
 ## Homework Steps
 
 ### Step 1: Load and Prepare the Dataset
@@ -156,90 +216,196 @@ This dataset follows standard clinical encodings commonly used in heart disease 
 ## Repository Structure
 
 ```
-/
+logistic-regression-aws-ai/
 ├── README.md                              # Project documentation
-├── SAGEMAKER_SETUP.md                     # SageMaker setup guide
-├── heart_disease_lr_analysis.ipynb        # Main Logistic Regression notebook
-├── heart_disease_prediction.csv           # Dataset file
-├── dataset.py                             # Dataset utilities
+├── SAGEMAKER_SETUP.md                     # SageMaker setup guide (Code Editor)
 ├── LICENSE                                # MIT License
-└── refering_notebooks/                    # Reference materials
-    ├── week2_classification_hour1_final.ipynb
-    ├── week2_classification_hour2_regularization_with_derivatives.ipynb
-    └── APENDIX-RidgeVsGradientDescentInRegularizedLinearRegression.ipynb
+│
+├── heart_disease_lr_analysis.ipynb        # 📓 Main notebook (Steps 1-5)
+├── heart_disease_prediction.csv           # 📊 Dataset (270 patients)
+├── dataset.py                             # Dataset utilities
+├── generate_images.py                     # 📸 Script to generate visualizations
+│
+├── images/                                # 📸 Generated visualizations
+│   ├── class_distribution.png
+│   ├── feature_distributions.png
+│   ├── correlation_matrix.png
+│   ├── cost_convergence.png
+│   ├── feature_weights.png
+│   ├── decision_boundary_age_cholesterol.png
+│   ├── decision_boundary_bp_max_hr.png
+│   ├── decision_boundary_st_depression_*.png
+│   ├── regularization_comparison.png
+│   ├── metrics_comparison.png
+│   └── confusion_matrix.png
+│
+├── model_artifacts/                       # 🧠 Trained model files
+│   ├── inference.py                       # SageMaker inference handler
+│   ├── weights.npy                        # Model weights (8 features)
+│   ├── bias.npy                           # Model bias
+│   ├── feature_mean.npy                   # Normalization mean
+│   ├── feature_std.npy                    # Normalization std
+│   └── model_metadata.json                # Model metadata
+│
+├── model.tar.gz                           # 📦 Packaged model for SageMaker
+│
+├── sagemaker_scripts/                     # 🚀 Deployment scripts
+│   ├── README.md                          # Scripts documentation
+│   ├── demo_deployment.py                 # ✅ Demo for Learner Labs
+│   ├── deploy.py                          # Full endpoint deployment
+│   ├── test_endpoint.py                   # Test deployed endpoint
+│   └── cleanup.py                         # Delete endpoint (avoid charges)
 ```
 
-### Notebook: Logistic Regression
+### Main Notebook
 
-`heart_disease_lr_analysis.ipynb` - Implements logistic regression from scratch using gradient descent to predict heart disease risk. Includes:
-- **EDA**: Data exploration, visualization, and preprocessing
-- **Implementation**: Sigmoid, cost function (binary cross-entropy), gradient descent
-- **Visualization**: Decision boundary plots for multiple feature pairs
-- **Regularization**: L2 regularization with hyperparameter tuning
-- **Evaluation**: Accuracy, precision, recall, F1-score metrics
+**`heart_disease_lr_analysis.ipynb`** - Complete implementation of logistic regression from scratch:
+
+| Step | Description | Status |
+|------|-------------|--------|
+| Step 1 | Data loading, EDA, preprocessing, 70/30 split | ✅ Complete |
+| Step 2 | Sigmoid, cost function, gradient descent training | ✅ Complete |
+| Step 3 | Decision boundary visualization (3 feature pairs) | ✅ Complete |
+| Step 4 | L2 regularization with λ tuning | ✅ Complete |
+| Step 5 | Model export & SageMaker deployment preparation | ✅ Complete |
+
+### Model Performance
+
+| Metric | Train Set | Test Set |
+|--------|-----------|----------|
+| Accuracy | 85.19% | 79.01% |
+| Precision | 83.58% | 73.17% |
+| Recall | 84.85% | 81.08% |
+| F1-Score | 84.21% | 76.92% |
 
 ## Deployment
 
-### AWS SageMaker Execution
+### AWS SageMaker Deployment
 
-To deploy and run this project on AWS SageMaker:
+The trained model is packaged and ready for deployment as a real-time inference endpoint on AWS SageMaker.
 
-1. Upload the notebook to AWS SageMaker (Studio or Notebook Instances)
-2. Run all cells successfully (no errors)
-3. Export best model (w/b as NumPy array)
-4. Create inference handler for patient inputs → probability output
-5. Deploy endpoint and test with sample inputs
+#### Deployment Architecture
+
+```
+┌─────────────────┐     ┌──────────────┐     ┌─────────────────┐
+│  Patient Data   │────▶│   Endpoint   │────▶│   Prediction    │
+│  (JSON input)   │     │ (ml.t2.med)  │     │  (Probability)  │
+└─────────────────┘     └──────────────┘     └─────────────────┘
+                              │
+                              ▼
+                    ┌──────────────────┐
+                    │   model.tar.gz   │
+                    │   (S3 bucket)    │
+                    └──────────────────┘
+```
+
+#### ⚠️ Learner Lab Limitations
+
+AWS Academy Learner Labs **block endpoint creation** as a cost-control measure:
+
+| Action | Status |
+|--------|--------|
+| Upload model to S3 | ✅ Allowed |
+| Create SageMaker Model object | ✅ Allowed |
+| Create Endpoint/EndpointConfig | ❌ **Blocked by VocLabPolicy** |
+
+**Solution:** Use `demo_deployment.py` which demonstrates the complete workflow with local inference testing.
+
+#### Deployment Scripts
+
+| Script | Purpose | Learner Lab |
+|--------|---------|-------------|
+| `demo_deployment.py` | Full demo with local inference | ✅ Works |
+| `deploy.py` | Create real endpoint | ❌ Needs permissions |
+| `test_endpoint.py` | Test deployed endpoint | ❌ Needs endpoint |
+| `cleanup.py` | Delete endpoint | ❌ Needs endpoint |
 
 ### Deployment Evidence
 
-<!-- TODO: Add deployment screenshots here -->
-<!-- 
-Include ≥3 images:
-1. Training job status screenshot
-2. Endpoint configuration screenshot  
-3. Inference response screenshot
+#### 📹 Video: SageMaker Demo Deployment
 
-Example:
-![Training Job Status](images/sagemaker_training.png)
-![Endpoint Config](images/sagemaker_endpoint.png)
-![Inference Response](images/sagemaker_inference.png)
--->
+The deployment process is documented in the following video:
 
-**Sample Inference Test:**
-- **Input:** Age=60, Chol=300
-- **Output:** Prob=0.XX (risk level)
-- **Endpoint ARN:** `[To be added after deployment]`
-
-> **Deployment Benefits:** Enables real-time risk scoring for clinical decision support. Expected latency: ~XXms per inference.
-
-### AWS SageMaker Execution Evidence
-
-The successful execution of the notebook on AWS SageMaker is documented in the following video:
-
-📹 **[aws-sagemaker-ai-notebooks-video.mp4](aws-sagemaker-ai-notebooks-video.mp4)**
+**[aws-sagemaker-ai-deployment-video.mp4](aws-sagemaker-ai-deployment-video.mp4)**
 
 The video demonstrates:
-- ✅ Notebook open in AWS SageMaker JupyterLab
-- ✅ Successful execution of all cells (no errors)
-- ✅ Rendered plots and visualizations
-- ✅ Complete training loop outputs
-- ✅ Model deployment and endpoint testing
+- ✅ Code Editor (VS Code) running in SageMaker Studio
+- ✅ Successful model upload to S3
+- ✅ SageMaker Model object creation
+- ✅ Local inference testing with 3 patient profiles
+- ❌ Endpoint creation blocked by Learner Lab policy (explained in video)
 
-#### How notebooks were uploaded to SageMaker
+#### Demo Deployment Output
 
-For detailed step-by-step instructions on setting up AWS SageMaker (creating domains, user profiles, JupyterLab spaces, and uploading notebooks), see the **[SageMaker Setup Guide](SAGEMAKER_SETUP.md)**.
+```
+🚀 HEART DISEASE MODEL - DEPLOYMENT DEMO
+======================================================================
+📦 Step 1: Initializing SageMaker session...
+   ✅ Region: us-east-1
+   ✅ Bucket: sagemaker-us-east-1-XXXX
 
-#### Comparison: Local Execution vs SageMaker Execution
+📤 Step 2: Uploading model.tar.gz to S3...
+   ✅ S3 Path: s3://sagemaker-us-east-1-XXXX/heart-disease-model/model.tar.gz
 
-| Aspect | Local Execution | AWS SageMaker |
-|--------|-----------------|---------------|
-| **Environment** | Personal machine with Jupyter | Cloud-based JupyterLab |
-| **Setup** | Manual Python/library installation | Pre-configured ML environment |
-| **Compute** | Limited to local hardware | Scalable instance types (ml.t3, ml.m5, etc.) |
-| **Results** | ✅ Identical outputs | ✅ Identical outputs |
-| **Plots** | ✅ Rendered correctly | ✅ Rendered correctly |
+🔧 Step 3: Creating SageMaker Model object...
+   ✅ Model object created successfully
 
-> **Conclusion:** Both environments produced identical results. The regression models, loss calculations, and visualizations behaved consistently across local and cloud execution, validating the portability of the implementation.
+🧪 Step 5: Testing inference LOCALLY...
+   📋 High-Risk Patient (Age: 65, Cholesterol: 320)
+      Probability: 99.38% → Heart Disease ⚠️
+
+   📋 Low-Risk Patient (Age: 35, Cholesterol: 180)
+      Probability: 0.28% → No Heart Disease ✅
+
+✅ DEPLOYMENT DEMO COMPLETE!
+```
+
+#### Sample Inference Results
+
+| Patient Profile | Age | Cholesterol | Probability | Diagnosis |
+|-----------------|-----|-------------|-------------|-----------|
+| High-Risk | 65 | 320 | 99.38% | Heart Disease ⚠️ |
+| Low-Risk | 35 | 180 | 0.28% | No Heart Disease ✅ |
+| Borderline | 60 | 280 | 82.79% | Heart Disease ⚠️ |
+
+### How to Run Deployment
+
+#### In Learner Lab (Recommended)
+
+```bash
+# 1. Open Code Editor in SageMaker Studio
+# 2. Upload model.tar.gz, model_artifacts/, sagemaker_scripts/
+# 3. Run demo:
+python sagemaker_scripts/demo_deployment.py
+```
+
+#### In Full AWS Account
+
+```bash
+# Deploy real endpoint
+python sagemaker_scripts/deploy.py
+
+# Test endpoint
+python sagemaker_scripts/test_endpoint.py
+
+# IMPORTANT: Clean up to avoid charges
+python sagemaker_scripts/cleanup.py
+```
+
+> 📖 See [SAGEMAKER_SETUP.md](SAGEMAKER_SETUP.md) for complete setup instructions.
+
+### Execution Environment Comparison
+
+| Aspect | Local Jupyter | AWS SageMaker |
+|--------|---------------|---------------|
+| **Environment** | Personal machine | Cloud Code Editor |
+| **Instance** | Local CPU | ml.t3.medium |
+| **Model Training** | ✅ Works | ✅ Works |
+| **Local Inference** | ✅ Works | ✅ Works |
+| **Endpoint Deployment** | N/A | ❌ Blocked (Learner Lab) |
+| **Results** | Identical | Identical |
+
+> **Conclusion:** The model is fully functional and production-ready. Endpoint deployment is only blocked by Learner Lab IAM policies, not by code issues.
 
 ## Built With
 
