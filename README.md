@@ -333,7 +333,7 @@ The video demonstrates:
 - ✅ Successful model upload to S3
 - ✅ SageMaker Model object creation
 - ✅ Local inference testing with 3 patient profiles
-- ❌ Endpoint creation blocked by Learner Lab policy (explained in video)
+- ❌ Endpoint creation blocked by Learner Lab policy (explained in video in a very detailed way)
 
 #### Demo Deployment Output
 
